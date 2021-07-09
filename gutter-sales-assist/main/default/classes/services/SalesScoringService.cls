@@ -1,4 +1,4 @@
-public with sharing class SalesScoringService {
+public with sharing class SalesScoringService implements ISalesScoringService {
     private List<String> precipitationStateAbbreviations = new List<String> {
         'sn',
         'sl',
