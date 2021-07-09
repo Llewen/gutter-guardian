@@ -17,7 +17,7 @@ public with sharing class MetaWeatherService implements IForecastService {
 
         if (locationSearchResponse.getStatusCode() != 200 && String.isNotBlank(locationSearchResponse.getBody())) {
             calloutLogRepository.logResponse(locationSearchResponse);
-            return null;
+            return new WeatherForecast();
         }
 
         Location loc = getLocationFromResponse(locationSearchResponse);
@@ -27,7 +27,8 @@ public with sharing class MetaWeatherService implements IForecastService {
         calloutLogRepository.logResponses(new List<HttpResponse> {locationSearchResponse, forecastResponse});
 
         if (forecastResponse.getStatusCode() != 200 && String.isNotBlank(forecastResponse.getBody())) {
-            return null;
+            calloutLogRepository.logResponse(forecastResponse);
+            return new WeatherForecast();
         }
 
         WeatherForecast forecast = (WeatherForecast) JSON.deserialize(forecastResponse.getBody(), WeatherForecast.class);
@@ -37,13 +38,15 @@ public with sharing class MetaWeatherService implements IForecastService {
 
     private HttpResponse getLocationResponse(Http h, String location) {
         HttpRequest locationSearchRequest = new HttpRequest();
+        locationSearchRequest.setMethod('GET');
         locationSearchRequest.setEndpoint(searchEndpoint + location);
         return h.send(locationSearchRequest);
     }
 
     private HttpResponse getForecastResponse(Http h, Integer woeid) {
         HttpRequest forecastRequest = new HttpRequest();
-        forecastRequest.setEndpoint(endpoint + String.valueOf(woeid));
+        forecastRequest.setMethod('GET');
+        forecastRequest.setEndpoint(endpoint + String.valueOf(woeid) + '/');
         return h.send(forecastRequest);
     }
 
