@@ -1,6 +1,7 @@
 public with sharing class MetaWeatherService implements IForecastService {
     private String endpoint = 'https://www.metaweather.com/api/location/';
     private String searchEndpoint = 'https://www.metaweather.com/api/location/search/?query=';
+    @TestVisible private ICalloutLogRepository calloutLogRepository = new CalloutLogRepository();
 
     public MetaWeatherService() {}
 
@@ -15,12 +16,15 @@ public with sharing class MetaWeatherService implements IForecastService {
         HttpResponse locationSearchResponse = getLocationResponse(h, location);
 
         if (locationSearchResponse.getStatusCode() != 200 && String.isNotBlank(locationSearchResponse.getBody())) {
+            calloutLogRepository.logResponse(locationSearchResponse);
             return null;
         }
 
         Location loc = getLocationFromResponse(locationSearchResponse);
         
         HttpResponse forecastResponse = getForecastResponse(h, loc.woeid);
+
+        calloutLogRepository.logResponses(new List<HttpResponse> {locationSearchResponse, forecastResponse});
 
         if (forecastResponse.getStatusCode() != 200 && String.isNotBlank(forecastResponse.getBody())) {
             return null;
