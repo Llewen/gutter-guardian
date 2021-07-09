@@ -1,0 +1,16 @@
+{
+  "packageDirectories": [
+    {
+      "path": "gutter-sales-assist",
+      "default": true
+    },
+    {
+      "path": "apex-mocks",
+      "default": false
+    }
+  ],
+  "name": "GoNimblyOnVacation",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "52.0"
+}
