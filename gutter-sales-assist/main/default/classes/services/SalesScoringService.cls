@@ -16,14 +16,14 @@ public with sharing class SalesScoringService {
     }
 
     public Integer getSalesScoreFromForecast(WeatherForecast forecast) {
-        Integer numberOfDaysWithPrecipitation = 0;
+        Decimal numberOfDaysWithPrecipitation = 0.0;
         for (DailyWeatherForecast dailyForecast : forecast.consolidated_weather) {
             if (precipitationStateAbbreviations.contains(dailyForecast.weather_state_abbr)) {
                 numberOfDaysWithPrecipitation++;
             }
         }
 
-        Integer forecastedPrecipitationPercentage = (numberOfDaysWithPrecipitation / forecast.consolidated_weather.size()) * 100;
+        Integer forecastedPrecipitationPercentage = ((numberOfDaysWithPrecipitation / forecast.consolidated_weather.size()) * 100).intValue();
         if (forecastedPrecipitationPercentage < 10) {
             forecastedPrecipitationPercentage = 10;
         }
