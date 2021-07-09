@@ -1,0 +1,12 @@
+<template>
+    <div class="slds-card">
+        <h1>Gutter Sales Assist</h1>
+        <div class="slds-p-around_medium">
+            <lightning-input type="text" label="Enter City: " onchange={handleLocationNameChange}></lightning-input>
+            <lightning-button variant="brand" label="Calculate" title="Calculate Sales Score" onclick={handleSearchButtonPress} class="slds-m-left_x-small"></lightning-button>
+        </div>
+        <div>
+            <h2>Sales Score: {salesScore}</h2>
+        </div>
+    </div>
+</template>
