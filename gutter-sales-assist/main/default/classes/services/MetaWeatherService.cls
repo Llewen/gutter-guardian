@@ -12,30 +12,15 @@ public with sharing class MetaWeatherService implements IForecastService {
     public WeatherForecast getWeatherForecastForLocation(String location) {
         Http h = new Http();
 
-        HttpRequest searchRequest = new HttpRequest();
-        searchRequest.setEndpoint(searchEndpoint + location);
-        HttpResponse searchResponse = h.send(searchRequest);
+        HttpResponse locationSearchResponse = getLocationResponse(h, location);
 
-        if (searchResponse.getStatusCode() != 200 && String.isNotBlank(searchResponse.getBody())) {
+        if (locationSearchResponse.getStatusCode() != 200 && String.isNotBlank(locationSearchResponse.getBody())) {
             return null;
         }
 
-        Location loc;
-        JSONParser locationParser = JSON.createParser(searchResponse.getBody());
-        while (locationParser.nextToken() != null) {
-            if (locationParser.getCurrentToken() == JSONToken.START_ARRAY) {
-                while (locationParser.nextToken() != null) {
-                    if (locationParser.getCurrentToken() == JSONToken.START_OBJECT) {
-                        loc = (Location) locationParser.readValueAs(Location.class);
-                        break;
-                    }
-                }
-            }
-        }
-
-        HttpRequest forecastRequest = new HttpRequest();
-        forecastRequest.setEndpoint(endpoint + String.valueOf(loc.woeid));
-        HttpResponse forecastResponse = h.send(forecastRequest);
+        Location loc = getLocationFromResponse(locationSearchResponse);
+        
+        HttpResponse forecastResponse = getForecastResponse(h, loc.woeid);
 
         if (forecastResponse.getStatusCode() != 200 && String.isNotBlank(forecastResponse.getBody())) {
             return null;
@@ -44,5 +29,32 @@ public with sharing class MetaWeatherService implements IForecastService {
         WeatherForecast forecast = (WeatherForecast) JSON.deserialize(forecastResponse.getBody(), WeatherForecast.class);
 
         return forecast;
+    }
+
+    private HttpResponse getLocationResponse(Http h, String location) {
+        HttpRequest locationSearchRequest = new HttpRequest();
+        locationSearchRequest.setEndpoint(searchEndpoint + location);
+        return h.send(locationSearchRequest);
+    }
+
+    private HttpResponse getForecastResponse(Http h, Integer woeid) {
+        HttpRequest forecastRequest = new HttpRequest();
+        forecastRequest.setEndpoint(endpoint + String.valueOf(woeid));
+        return h.send(forecastRequest);
+    }
+
+    private Location getLocationFromResponse(HttpResponse locationResponse) {
+        JSONParser locationParser = JSON.createParser(locationResponse.getBody());
+        while (locationParser.nextToken() != null) {
+            if (locationParser.getCurrentToken() == JSONToken.START_ARRAY) {
+                while (locationParser.nextToken() != null) {
+                    if (locationParser.getCurrentToken() == JSONToken.START_OBJECT) {
+                        return (Location) locationParser.readValueAs(Location.class);
+                    }
+                }
+            }
+        }
+
+        return new Location();
     }
 }
