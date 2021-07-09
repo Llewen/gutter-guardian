@@ -19,4 +19,26 @@ private class CalloutLogRepositoryTest {
         System.assertEquals(String.valueOf(statusCode), testLog.StatusCode__c, 'Did not log status code.');
         System.assertEquals(responseBody, testLog.ResponseBody__c, 'Did not log response body.');
     }
+
+    @isTest
+    static void testShouldInsertCalloutLogsWhenGivenListOfResponses() {
+        Integer statusCode = 200;
+        String responseBody = 'Testing';
+
+        HttpResponse testResponse = new HttpResponse();
+        testResponse.setStatusCode(statusCode);
+        testResponse.setBody(responseBody);
+
+        HttpResponse testResponse2 = new HttpResponse();
+        testResponse2.setStatusCode(statusCode);
+        testResponse2.setBody(responseBody);
+
+        CalloutLogRepository calloutLogRepo = new CalloutLogRepository();
+        Test.startTest();
+            calloutLogRepo.logResponses(new List<HttpResponse> {testResponse, testResponse2});
+        Test.stopTest();
+
+        List<CalloutLog__c> testLogs = [SELECT Id FROM CalloutLog__c];
+        System.assertEquals(2, testLogs.size(), 'Did not log all responses.');
+    }
 }
