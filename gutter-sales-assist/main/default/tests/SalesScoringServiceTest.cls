@@ -9,7 +9,8 @@ private class SalesScoringServiceTest {
         WeatherForecast testForecast = new WeatherForecast();
         testForecast.consolidated_weather = new List<DailyWeatherForecast> {testDailyForecast};
 
-        SalesScoringService salesScoringService = new SalesScoringService();
+        List<String> precipitousAbbreviations = new List<String> {'r'};
+        SalesScoringService salesScoringService = new SalesScoringService(precipitousAbbreviations);
         Test.startTest();
             Integer salesScore = salesScoringService.getSalesScoreFromForecast(testForecast);
         Test.stopTest();
