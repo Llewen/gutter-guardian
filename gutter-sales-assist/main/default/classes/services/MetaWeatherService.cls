@@ -39,7 +39,7 @@ public with sharing class MetaWeatherService implements IForecastService {
     private HttpResponse getLocationResponse(Http h, String location) {
         HttpRequest locationSearchRequest = new HttpRequest();
         locationSearchRequest.setMethod('GET');
-        locationSearchRequest.setEndpoint(searchEndpoint + location);
+        locationSearchRequest.setEndpoint(searchEndpoint + EncodingUtil.urlEncode(location, 'UTF-8'));
         return h.send(locationSearchRequest);
     }
 
