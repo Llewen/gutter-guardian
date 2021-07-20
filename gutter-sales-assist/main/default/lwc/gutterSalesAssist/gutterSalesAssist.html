@@ -8,5 +8,11 @@
         <div>
             <h2>Sales Score: {salesScore}</h2>
         </div>
+        <div>
+            <h2>Last ten searches (On Page Load):</h2>
+            <template for:each={searches.data} for:item="search">
+                <div key={search.Id}>{search.LocationName__c}</div>
+            </template>
+        </div>
     </div>
 </template>

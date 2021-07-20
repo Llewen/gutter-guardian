@@ -1,9 +1,12 @@
 import { LightningElement, wire } from 'lwc';
 import getSalesScoreWithForecast from '@salesforce/apex/ForecastController.getSalesScoreWithForecast';
+import getLastTenSearches from '@salesforce/apex/ForecastController.getLastTenSearches';
 
 export default class GutterSalesAssist extends LightningElement {
     locationName;
     salesScore;
+
+    @wire (getLastTenSearches) searches;
 
     getScore() {
         getSalesScoreWithForecast({location: this.locationName})
